@@ -1,0 +1,99 @@
+{
+  "date": "2026-09-23",
+  "host": "devbox1, Apple M1 Max, macOS 15.7.9",
+  "scope": "Native development-host checks. No human dictation or clean-machine pass is claimed.",
+  "permissions": {
+    "microphone_granted": true,
+    "accessibility_granted": true,
+    "external_grant_advances_onboarding": true,
+    "recovery": "App-specific tccutil reset, then ordinary System Settings grant for the installed ad-hoc build.",
+    "same_bundle_restart_preserves_grants": true
+  },
+  "ui": {
+    "model_selection": true,
+    "endpoint_saved": true,
+    "mode_edit_reorder_remove": true,
+    "dictionary_replacement_saved": true,
+    "light_and_dark": true,
+    "minimum_width_px": 760,
+    "save_row_visible": true,
+    "startup_registration": "SMAppService success recorded",
+    "start_hidden_on_first_launch": true,
+    "second_launch_reveals_settings": true,
+    "endpoint_modes_dictionary_startup_survive_restart": true
+  },
+  "native_context": {
+    "Safari_exact_url": true,
+    "Chrome_exact_url": true,
+    "Brave_exact_url": true,
+    "Mail": "Email",
+    "Cursor": "Code",
+    "Messages": "Messaging",
+    "Arc": "not installed"
+  },
+  "native_paste": {
+    "TextEdit_exact_insertion": true,
+    "TextEdit_receipt": "clipboard_read",
+    "TextEdit_preflight_ms": 28,
+    "rejecting_window_outcome": "clipboard_fallback",
+    "fallback_text_survives_exit": true,
+    "fallback_notice_visually_checked": true,
+    "cold_nontext_preflight_ms": 78,
+    "limit": "Unknown/custom controls retain receipt-based paste. An unrelated reader can acknowledge a clipboard read."
+  },
+  "silence": {
+    "source": "Built-in microphone, closed lid, capture and stop in installed app",
+    "audio_ms": 0,
+    "outcome": "empty_audio",
+    "paste_outcome": "not_attempted",
+    "stt_ms": 0,
+    "refine_ms": 0,
+    "total_ms": 17
+  },
+  "host_service": {
+    "endpoint": "http://100.80.149.7:11434/v1",
+    "bind": "Tailscale address only",
+    "model": "qwen3:8b",
+    "context_tokens": 4096,
+    "restart_and_preload_verified": true,
+    "eval_passed": 27,
+    "eval_total": 30,
+    "warm_text_p50_ms": 302,
+    "warm_text_p95_ms": 541,
+    "MacBook_network_measurement": false
+  },
+  "automated": {
+    "Rust_tests_passed": 296,
+    "permission_tests_passed": 2,
+    "eslint": "passed",
+    "release_clippy": "passed with 53 existing warnings",
+    "typescript_vite": "passed"
+  },
+  "pending": [
+    "20 live human dictations and end-to-end latency on the MacBook",
+    "Live Slack/Mail/Cursor dictation comparison",
+    "Clean macOS 14+ launch",
+    "MacBook-to-host connection verification",
+    "Live endpoint-outage dictation: raw paste without a dialog"
+  ],
+  "hotkeys": {
+    "method": "Native CGEvent driver sends actual Option and Space key-down/up events into the installed app global shortcut handler; no human speech.",
+    "hold_and_release_completed": true,
+    "hold_silence_capture_stop_ms": 19,
+    "hold_silence_outcome": "empty_audio",
+    "tap_locks_recording": true,
+    "escape_cancels_to_idle": true
+  },
+  "release": {
+    "version": "0.1.1",
+    "cargo_tauri_build": "passed on macOS Apple Silicon",
+    "installed_path": "/Users/aldo/Applications/hushtype.app",
+    "archive": "artifacts/hushtype-0.1.1-apple-silicon.zip",
+    "archive_bytes": 18857175,
+    "strict_ad_hoc_signature": "passed on build, installed copy, and extracted archive",
+    "both_mit_notices_match_source": true,
+    "model_installer": "fresh download, pinned SHA-256 verification, and extraction passed; packaged helper also launched successfully",
+    "http_download": "200 OK on devbox1 port 8842",
+    "clean_machine_launch": false
+  }
+}

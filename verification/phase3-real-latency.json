@@ -1,0 +1,7 @@
+{
+  "source": "/Users/aldo/Library/Logs/dev.hushtype.app/dictation-timings.jsonl",
+  "completed_refine_attempts": 0,
+  "required": 20,
+  "sample_complete": false,
+  "reason": "No completed real dictation attempts with refinement and settled paste. Latency acceptance is unmeasured."
+}

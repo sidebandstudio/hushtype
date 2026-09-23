@@ -1,0 +1,65 @@
+/* hushtype palette. Shared by settings and the recording overlay. */
+:root {
+  --light-color-text: #26352d;
+  --light-color-background: #f4f1e9;
+  --light-color-logo-primary: #3b6450;
+  --light-color-logo-stroke: #263d34;
+  --light-color-warning: #97621b;
+  --light-color-error: #b83e38;
+  --dark-color-text: #e6e9df;
+  --dark-color-background: #18211c;
+  --dark-color-logo-primary: #b2c8a6;
+  --dark-color-logo-stroke: #d9e2ca;
+  --dark-color-warning: #dfb872;
+  --dark-color-error: #eeaaa0;
+  --color-text: var(--light-color-text);
+  --color-background: var(--light-color-background);
+  --color-logo-primary: var(--light-color-logo-primary);
+  --color-logo-stroke: var(--light-color-logo-stroke);
+  --color-warning: var(--light-color-warning);
+  --color-error: var(--light-color-error);
+  --color-background-ui: #315640;
+  --color-on-accent: #fcfaf3;
+  --color-surface: #fcfaf5;
+  --color-well: #eceee3;
+  --color-border: #d9dcd0;
+  --color-mid-gray: #697166;
+  --color-text-stroke: #f4f1e9;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-text: var(--dark-color-text);
+    --color-background: var(--dark-color-background);
+    --color-logo-primary: var(--dark-color-logo-primary);
+    --color-logo-stroke: var(--dark-color-logo-stroke);
+    --color-warning: var(--dark-color-warning);
+    --color-error: var(--dark-color-error);
+    --color-background-ui: #b2c8a6;
+    --color-on-accent: #1b2b20;
+    --color-surface: #202b23;
+    --color-well: #2c372b;
+    --color-border: #3a473b;
+    --color-mid-gray: #acb5a7;
+    --color-text-stroke: #18211c;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-text: var(--dark-color-text);
+  --color-background: var(--dark-color-background);
+  --color-logo-primary: var(--dark-color-logo-primary);
+  --color-logo-stroke: var(--dark-color-logo-stroke);
+  --color-warning: var(--dark-color-warning);
+  --color-error: var(--dark-color-error);
+  --color-background-ui: #b2c8a6;
+  --color-on-accent: #1b2b20;
+  --color-surface: #202b23;
+  --color-well: #2c372b;
+  --color-border: #3a473b;
+  --color-mid-gray: #acb5a7;
+  --color-text-stroke: #18211c;
+  color-scheme: dark;
+}

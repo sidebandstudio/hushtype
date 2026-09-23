@@ -1,0 +1,35 @@
+{
+  "kind": "text-only mode comparison; explicit fixture identities, not captured apps",
+  "results": [
+    {
+      "fixture_bundle": "com.tinyspeck.slackmacgap",
+      "mode": "Messaging",
+      "raw": "um I am going to send the report tomorrow I will follow up after lunch",
+      "result": {
+        "duration_ms": 1259,
+        "outcome": "cleaned",
+        "text": "I'm going to send the report tomorrow and will follow up after lunch."
+      }
+    },
+    {
+      "fixture_bundle": "com.apple.mail",
+      "mode": "Email",
+      "raw": "um I am going to send the report tomorrow I will follow up after lunch",
+      "result": {
+        "duration_ms": 469,
+        "outcome": "cleaned",
+        "text": "I am going to send the report tomorrow. I will follow up after lunch."
+      }
+    },
+    {
+      "fixture_bundle": "com.todesktop.230313mzl4w4u92",
+      "mode": "Code",
+      "raw": "um I am going to send the report tomorrow I will follow up after lunch",
+      "result": {
+        "duration_ms": 0,
+        "outcome": "disabled",
+        "text": "um I am going to send the report tomorrow I will follow up after lunch"
+      }
+    }
+  ]
+}

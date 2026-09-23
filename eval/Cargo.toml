@@ -1,0 +1,17 @@
+[package]
+name = "hushtype-refine-eval"
+version = "0.1.0"
+edition = "2021"
+publish = false
+default-run = "hushtype-refine-eval"
+
+# Compile the production refine module without the desktop or audio engines.
+# All of these are already dependencies of the app.
+[dependencies]
+reqwest = { version = "0.12", features = ["json", "stream", "gzip", "brotli", "deflate"] }
+tokio = { version = "1.43.0", features = ["macros", "net", "io-util", "sync", "time", "rt-multi-thread"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+specta = { version = "=2.0.0-rc.22", features = ["derive"] }
+regex = "1"
+log = "0.4.25"

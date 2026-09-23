@@ -1,0 +1,11 @@
+{
+  "audio_secs": 3.7180625,
+  "best_ms": 694,
+  "bound_backend": "onnx",
+  "load_ms": 1253,
+  "model": "parakeet-tdt-0.6b-v3",
+  "requested_device": "settings",
+  "rtf": 5.357438760806916,
+  "text": "Send the project update on Wednesday, the build is ready for review.",
+  "transcribe_ms": [776, 775, 694]
+}

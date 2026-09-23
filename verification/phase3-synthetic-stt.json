@@ -1,0 +1,14 @@
+{
+  "audio_secs": 9.4751875,
+  "best_ms": 334,
+  "bound_backend": "onnx",
+  "load_ms": 772,
+  "model": "parakeet-tdt-0.6b-v3",
+  "requested_device": "settings",
+  "rtf": 28.3688248502994,
+  "text": "Please send the updated project report on Wednesday, I will review the logs after lunch and follow up with the team before the end of the day.",
+  "transcribe_ms": [
+    347, 344, 369, 380, 432, 334, 389, 388, 380, 399, 367, 412, 340, 394, 356,
+    407, 339, 372, 360, 389
+  ]
+}
