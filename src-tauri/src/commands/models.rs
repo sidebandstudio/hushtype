@@ -47,7 +47,7 @@ pub async fn download_model(
     model_id: String,
 ) -> Result<(), String> {
     let _ = (app_handle, model_manager, model_id);
-    Err("Model downloads are disabled. Install local models with scripts/setup-models.sh and refresh the model list.".into())
+    Err("hushtype doesn't download models itself. Run the install command from hushtype.vercel.app to install Parakeet V3, then refresh the model list.".into())
 }
 
 #[tauri::command]

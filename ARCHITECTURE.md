@@ -106,7 +106,7 @@ The requested UI redesign uses the existing React settings components and store.
 
 The normal client remains self-contained for audio capture, local STT, hotkeys, and paste. Only the generic refine request can go to another Mac. `scripts/setup-refine-host.sh` installs a separate launchd job for an existing Ollama installation on the host's Tailscale interface. `serve-refine-host.sh` starts Ollama, preloads the local model, prevents automatic AC-power sleep while serving, and exits when the child exits so launchd can restart it. None of this host setup runs inside hushtype.
 
-The app archive includes a separate `Install speech model.command`, backed by `scripts/setup-models.sh --model-only`. It installs the checked Parakeet files from Hugging Face on the client without requiring the source tree. The app itself retains the endpoint-only runtime network policy.
+Users install through `website/install.sh`, published at hushtype.vercel.app. It downloads the app from the site and the checked Parakeet files from Hugging Face, installs into Applications, and opens the app, without requiring the source tree. The app itself retains the endpoint-only runtime network policy.
 
 Native paste verification found two further failure paths. `context_macos.rs::focused_control_is_nontext` now reads only the focused Accessibility role under a 200 ms deadline, with up to 150 ms for a cold focused-element query. `paste_tx/macos.rs` sends recognized non-text controls directly to clipboard fallback. Unknown/custom controls retain receipt-based paste. A receipt still cannot identify its reader or prove insertion in an arbitrary custom editor.
 

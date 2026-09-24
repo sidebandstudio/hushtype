@@ -22,13 +22,13 @@ Configuration takes about five minutes after the initial model downloads and app
    ollama pull qwen3:8b
    ```
 
-2. If you downloaded the app archive, move `hushtype.app` to Applications and open the included `Install speech model.command`. It downloads and verifies Parakeet once. From a source checkout, install the speech model and build-time VAD resource with:
+2. Install hushtype. On a Mac with Apple silicon, open Terminal and run:
 
    ```sh
-   scripts/setup-models.sh
+   curl -fsSL https://hushtype.vercel.app/install.sh | bash
    ```
 
-   The script downloads Parakeet V3 from Hugging Face and the VAD from the Silero project, each at a pinned revision, verifies every file's SHA-256, and installs Parakeet V3 under `~/Library/Application Support/dev.hushtype.app/models`. The app does not download models. Select Parakeet V3 during onboarding, using Refresh models if needed.
+   The installer downloads the app from [hushtype.vercel.app](https://hushtype.vercel.app) and Parakeet V3 from Hugging Face, checks every file's SHA-256, installs hushtype into Applications, and opens it. Running it again updates the app. From a source checkout, `scripts/setup-models.sh` installs the speech model and the build-time VAD resource instead. The app does not download models. Select Parakeet V3 during onboarding, using Refresh models if needed.
 
 3. Open `hushtype.app` and grant Microphone and Accessibility access in System Settings. These grants must be made on the Mac running hushtype. Install the app in its permanent location before granting access. Keep the desktop unlocked for dictation.
 
@@ -121,5 +121,17 @@ scripts/report-latency.py
 ```
 
 [Eval instructions and recorded results](eval/README.md) explain the 30 fixed fixtures and endpoint overrides. Refine settings show the last 20 timing records. The rolling log is `~/Library/Logs/dev.hushtype.app/dictation-timings.jsonl`; it includes stage durations, mode, and outcome codes, without transcript or captured context. The latency report needs 20 actual completed dictations and includes raw fallbacks.
+
+## Website and releases
+
+The public site in `website/` is static and deploys to the Sideband Studio Vercel team as the `hushtype` project. To publish a release, build the app as above, then:
+
+```sh
+scripts/generate-third-party-notices.sh   # when dependencies changed
+scripts/package-website-release.sh        # zips the app, stamps install.sh
+cd website && vercel deploy --prod --scope sidebandstudio
+```
+
+See [website/README.md](website/README.md) for details.
 
 The architecture, decisions, and verification record are in [ARCHITECTURE.md](ARCHITECTURE.md), [DECISIONS.md](DECISIONS.md), and [PROGRESS.md](PROGRESS.md). Live microphone, three-app, and clean-machine checks remain pending until performed; text-only evals and synthetic audio do not count toward them.

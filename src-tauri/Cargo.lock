@@ -2600,7 +2600,7 @@ checksum = "135b12329e5e3ce057a9f972339ea52bc954fe1e9358ef27f95e89716fbc5424"
 
 [[package]]
 name = "hushtype"
-version = "0.1.1"
+version = "0.2.1"
 dependencies = [
  "anyhow",
  "chrono",

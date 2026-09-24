@@ -783,7 +783,7 @@
     },
     "clipboardFallback": "Text copied. Press Command-V to paste.",
     "name": "hushtype",
-    "localModels": "No speech model is installed yet. Open Install speech model.command from the app download, then refresh this list. From a source checkout, run scripts/setup-models.sh.",
+    "localModels": "Speech models are installed outside the app. To install or repair Parakeet V3, run the install command from hushtype.vercel.app again, then choose Refresh models.",
     "refresh": "Refresh models",
     "ui": {
       "dictation": "Dictation",

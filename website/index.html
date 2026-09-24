@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>hushtype: dictation for Mac that runs on your Mac</title>
+    <meta
+      name="description"
+      content="Hold Option-Space, speak, and let go. hushtype types what you say into any app. Speech recognition runs on your Mac, so your voice never leaves it."
+    />
+    <meta
+      name="theme-color"
+      content="#f4f1e9"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#18211c"
+      media="(prefers-color-scheme: dark)"
+    />
+    <link rel="canonical" href="https://hushtype.vercel.app/" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/brand/favicon-32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="64x64"
+      href="/brand/favicon-64.png"
+    />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hushtype.vercel.app/" />
+    <meta property="og:title" content="hushtype: hold, speak, release" />
+    <meta
+      property="og:description"
+      content="Dictation for Mac. Speech recognition runs on your Mac, so your voice never leaves it."
+    />
+    <meta
+      property="og:image"
+      content="https://hushtype.vercel.app/images/og.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link
+      rel="preload"
+      href="/fonts/libre-baskerville.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-row">
+        <a class="wordmark" href="/" aria-label="hushtype home">
+          <span class="wordmark-mark" aria-hidden="true"></span>
+          <span>hushtype</span>
+        </a>
+        <nav class="site-nav" aria-label="Sections">
+          <a href="#how">How it works</a>
+          <a href="#privacy">Privacy</a>
+          <a href="#install">Install</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <details class="mobile-menu" data-mobile-menu>
+          <summary class="button button-small button-quiet">Menu</summary>
+          <nav class="mobile-menu-panel" aria-label="Sections">
+            <a href="#how">How it works</a>
+            <a href="#privacy">Privacy</a>
+            <a href="#install">Install</a>
+            <a href="#faq">FAQ</a>
+          </nav>
+        </details>
+        <button class="button button-small" type="button" data-download>
+          Download
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Dictation for Mac</p>
+            <h1 class="hero-title">Hold. <em>Speak.</em> Release.</h1>
+            <p class="lede">
+              hushtype types what you say into whatever app you're using. Speech
+              recognition runs on your Mac, so your voice never leaves it.
+            </p>
+            <div class="hero-actions">
+              <button class="button button-large" type="button" data-download>
+                <span class="download-glyph" aria-hidden="true"></span>
+                <span data-download-label>Download for Mac</span>
+              </button>
+              <a class="text-link" href="#how">See how it works</a>
+            </div>
+            <p class="platform-note" data-platform-note>
+              For Macs with Apple silicon on macOS 14 or later. Windows and
+              iPhone are coming.
+            </p>
+          </div>
+
+          <div
+            class="demo"
+            data-demo
+            role="img"
+            aria-label="Animated example. Someone holds Option and Space and says, meet me at the library, actually the cafe. hushtype pastes: Meet me at the cafe."
+          >
+            <div class="demo-window" aria-hidden="true">
+              <div class="window-bar">
+                <span class="traffic"><i></i><i></i><i></i></span>
+                <span class="window-title" data-window-title>Messages</span>
+                <span class="mode-chip" data-mode-chip>Messaging mode</span>
+              </div>
+
+              <div class="scene is-active" data-scene="messages">
+                <div class="thread">
+                  <p class="thread-name">Nora</p>
+                  <p class="bubble bubble-in">Where should we meet?</p>
+                </div>
+                <div class="composer composer-pill">
+                  <span class="typed" data-typed></span
+                  ><span class="caret"></span>
+                </div>
+              </div>
+
+              <div class="scene" data-scene="mail">
+                <div class="mail-fields">
+                  <p><span>To</span>Release team</p>
+                  <p><span>Subject</span>Before Thursday</p>
+                </div>
+                <div class="composer composer-page">
+                  <span class="typed" data-typed></span
+                  ><span class="caret"></span>
+                </div>
+              </div>
+
+              <div class="scene" data-scene="slack">
+                <div class="thread">
+                  <p class="thread-name"># launch</p>
+                  <p class="slack-line">
+                    <b>Mateo</b> When should the build go out?
+                  </p>
+                </div>
+                <div class="composer composer-box">
+                  <span class="typed" data-typed></span
+                  ><span class="caret"></span>
+                </div>
+              </div>
+
+              <div class="overlay-pill" data-pill>
+                <span class="wave"
+                  ><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+                ></span>
+                <span class="pill-label" data-pill-label>Listening</span>
+              </div>
+            </div>
+
+            <div class="demo-footer" aria-hidden="true">
+              <div class="keys" data-keys>
+                <span class="key key-option"
+                  ><span class="key-face"
+                    ><b>⌥</b><small>option</small></span
+                  ></span
+                >
+                <span class="key key-space"
+                  ><span class="key-face"><small>space</small></span></span
+                >
+              </div>
+              <p class="heard">
+                <span class="heard-label">You say</span>
+                <span class="heard-text" data-heard></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="how" aria-labelledby="how-title">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow">How it works</p>
+            <h2 id="how-title">What happens when you let go</h2>
+            <p class="section-intro">
+              Four steps run in order. Each one has a fallback, so you never
+              lose what you said.
+            </p>
+          </div>
+          <ol class="pipeline">
+            <li>
+              <span class="step-number">01</span>
+              <h3>Transcribe on your Mac</h3>
+              <p>
+                Parakeet V3 turns your audio into text on the Mac itself. On an
+                M1 Max it transcribed an 11-second clip in half a second.
+              </p>
+            </li>
+            <li>
+              <span class="step-number">02</span>
+              <h3>Clean it up, if you like</h3>
+              <p>
+                A language model drops fillers and false starts and fixes
+                punctuation. Use Ollama on your Mac or any OpenAI-compatible
+                server. No answer within 2.5 seconds means you get the raw
+                transcript.
+              </p>
+            </li>
+            <li>
+              <span class="step-number">03</span>
+              <h3>Spell things your way</h3>
+              <p>
+                Names and terms from your dictionary come out right.
+                Replacements run last, so "open claw" always becomes OpenClaw.
+              </p>
+            </li>
+            <li>
+              <span class="step-number">04</span>
+              <h3>Paste at the cursor</h3>
+              <p>
+                The text lands where you were typing. If an app refuses the
+                paste, hushtype leaves the text on your clipboard and tells you.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section section-tight" aria-labelledby="examples-title">
+        <div class="container examples-grid">
+          <div class="section-head">
+            <p class="eyebrow">Cleanup</p>
+            <h2 id="examples-title">Speech in. Sentences out.</h2>
+            <p class="section-intro">
+              These come from hushtype's cleanup tests. With qwen3:8b it gets 27
+              of the 30 right. When an edit fails hushtype's checks, you get
+              exactly what you said instead.
+            </p>
+          </div>
+          <dl class="examples">
+            <div>
+              <dt>meet me at the library actually the cafe</dt>
+              <dd>Meet me at the cafe.</dd>
+            </div>
+            <div>
+              <dt>we need three no four copies</dt>
+              <dd>We need four copies.</dd>
+            </div>
+            <div>
+              <dt>uh please please check the attachment</dt>
+              <dd>Please check the attachment.</dd>
+            </div>
+            <div>
+              <dt>invite Priya Mateo and Jin</dt>
+              <dd>Invite Priya, Mateo, and Jin.</dd>
+            </div>
+            <div>
+              <dt>um can you review this before Friday</dt>
+              <dd>Can you review this before Friday?</dd>
+            </div>
+            <div>
+              <dt>the api returns json</dt>
+              <dd>The API returns JSON.</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="modes-title">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow">Modes</p>
+            <h2 id="modes-title">It writes like the app you're in</h2>
+            <p class="section-intro">
+              When you start talking, hushtype checks which app is in front and
+              picks a mode. Modes match by app or by web address, and you can
+              add your own.
+            </p>
+          </div>
+          <div class="modes">
+            <article class="mode">
+              <h3>Messaging</h3>
+              <p class="mode-apps">
+                Slack, Messages, Discord, Telegram, WhatsApp
+              </p>
+              <p>Casual wording, and no sign-off added.</p>
+            </article>
+            <article class="mode">
+              <h3>Email</h3>
+              <p class="mode-apps">Mail, Gmail, Outlook, Superhuman</p>
+              <p>Complete sentences and paragraphs.</p>
+            </article>
+            <article class="mode">
+              <h3>Code</h3>
+              <p class="mode-apps">
+                Cursor, VS Code, Xcode, Terminal, iTerm, Warp, Ghostty
+              </p>
+              <p>
+                Cleanup is off, so identifiers and paths stay exactly as you
+                said them.
+              </p>
+            </article>
+            <article class="mode">
+              <h3>Default</h3>
+              <p class="mode-apps">Everywhere else</p>
+              <p>Standard cleanup.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="section section-ink"
+        id="privacy"
+        aria-labelledby="privacy-title"
+      >
+        <div class="container privacy-grid">
+          <div>
+            <p class="eyebrow">Privacy</p>
+            <h2 id="privacy-title">Your voice stays on your Mac</h2>
+          </div>
+          <ul class="privacy-list">
+            <li>
+              Speech recognition runs locally. Your audio is never uploaded.
+            </li>
+            <li>No account, no analytics, no sync, and no update checks.</li>
+            <li>
+              Cleanup is optional. When it's on, hushtype sends the transcript
+              to the one server you choose, along with the app name, window
+              title, and page address. Selected text and clipboard contents are
+              only sent if you turn them on for a mode.
+            </li>
+            <li>
+              History stays on your Mac, and you decide how long recordings are
+              kept.
+            </li>
+            <li>
+              This website doesn't track you either. No cookies, no analytics.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="app-title">
+        <div class="container app-grid">
+          <div class="section-head">
+            <p class="eyebrow">The app</p>
+            <h2 id="app-title">Quiet until you need it</h2>
+            <p class="section-intro">
+              hushtype lives in your menu bar and shows one of four states:
+              idle, listening, transcribing, or refining. Settings are there
+              when you want them, in light or dark.
+            </p>
+          </div>
+          <figure class="screens">
+            <img
+              class="screen screen-back"
+              src="/images/app-dark.png"
+              width="1092"
+              height="872"
+              loading="lazy"
+              decoding="async"
+              alt="hushtype's Dictation settings in dark mode, with the Option-Space shortcut."
+            />
+            <img
+              class="screen screen-front"
+              src="/images/app-light.png"
+              width="1092"
+              height="972"
+              loading="lazy"
+              decoding="async"
+              alt="hushtype's Modes settings in light mode, listing Messaging, Email, Code, and Default."
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section
+        class="section section-install"
+        id="install"
+        aria-labelledby="install-title"
+      >
+        <div class="container install-grid">
+          <div class="install-intro">
+            <img
+              class="install-icon"
+              src="/brand/icon-256.png"
+              width="128"
+              height="128"
+              alt=""
+            />
+            <p class="eyebrow">Install</p>
+            <h2 id="install-title">Install in one step</h2>
+            <p class="section-intro">
+              Paste one line into Terminal. It downloads hushtype and its speech
+              model, checks both, and opens the app.
+            </p>
+            <ul class="requirements">
+              <li>A Mac with Apple silicon (M1 or later)</li>
+              <li>macOS 14 Sonoma or later</li>
+              <li>1.5 GB free while installing</li>
+            </ul>
+          </div>
+
+          <div class="install-card">
+            <ol class="install-steps">
+              <li>
+                <h3>Open Terminal</h3>
+                <p>
+                  Press <kbd>⌘</kbd> <kbd>Space</kbd>, type <b>Terminal</b>, and
+                  press Return.
+                </p>
+              </li>
+              <li>
+                <h3>Paste this line and press Return</h3>
+                <div class="command">
+                  <!-- prettier-ignore -->
+                  <code data-command>curl -fsSL https://hushtype.vercel.app/install.sh <wbr /><span class="nowrap">| bash</span></code>
+                  <button class="copy-button" type="button" data-copy>
+                    Copy
+                  </button>
+                </div>
+              </li>
+              <li>
+                <h3>Wait a few minutes</h3>
+                <p>
+                  The speech model is 670 MB, so that's the slow part. Terminal
+                  shows progress.
+                </p>
+              </li>
+              <li>
+                <h3>Say yes to two permissions</h3>
+                <p>
+                  When hushtype opens, allow Microphone and Accessibility, then
+                  choose Parakeet V3.
+                </p>
+              </li>
+              <li>
+                <h3>Talk</h3>
+                <p>
+                  Click into any text field, hold <kbd>⌥</kbd> <kbd>Space</kbd>,
+                  speak, and let go.
+                </p>
+              </li>
+            </ol>
+            <div class="install-notes">
+              <details>
+                <summary>Why Terminal instead of a download?</summary>
+                <p>
+                  hushtype isn't notarized by Apple yet, so macOS blocks it when
+                  a browser downloads it. Files downloaded from Terminal aren't
+                  blocked. The installer is short, and you can
+                  <a href="/install.sh">read it first</a>.
+                </p>
+              </details>
+              <details>
+                <summary>What exactly does the installer do?</summary>
+                <p>
+                  It checks that your Mac is supported, downloads hushtype from
+                  this site and the Parakeet V3 model from Hugging Face, and
+                  compares every file with its SHA-256 checksum. Then it moves
+                  hushtype into Applications and opens it. Nothing else on your
+                  Mac changes.
+                </p>
+              </details>
+              <details>
+                <summary>How do I update or uninstall?</summary>
+                <p>
+                  To update, run the same line again. Your settings and model
+                  stay. To uninstall, quit hushtype from the menu bar, delete it
+                  from Applications, and delete the folder
+                  <code>~/Library/Application Support/dev.hushtype.app</code>.
+                </p>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-tight" aria-labelledby="platforms-title">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow">Platforms</p>
+            <h2 id="platforms-title">Where hushtype runs</h2>
+          </div>
+          <div class="platforms">
+            <article class="platform platform-ready">
+              <h3>Mac</h3>
+              <p class="status status-ready">Available now</p>
+              <p>Apple silicon, macOS 14 or later.</p>
+            </article>
+            <article class="platform">
+              <h3>Windows</h3>
+              <p class="status">Coming soon</p>
+              <p>Windows support is on our list.</p>
+            </article>
+            <article class="platform">
+              <h3>iPhone</h3>
+              <p class="status">On the way</p>
+              <p>An iPhone version is in the works.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="faq" aria-labelledby="faq-title">
+        <div class="container faq-grid">
+          <div class="section-head">
+            <p class="eyebrow">FAQ</p>
+            <h2 id="faq-title">Questions</h2>
+          </div>
+          <div class="faq">
+            <details>
+              <summary>Does it work offline?</summary>
+              <p>
+                Dictation does. Only cleanup needs a connection, and only to the
+                server you set. Run Ollama on your Mac and nothing leaves it at
+                all.
+              </p>
+            </details>
+            <details>
+              <summary>Which languages does it understand?</summary>
+              <p>
+                Parakeet V3 covers 25 languages: Bulgarian, Croatian, Czech,
+                Danish, Dutch, English, Estonian, Finnish, French, German,
+                Greek, Hungarian, Italian, Latvian, Lithuanian, Maltese, Polish,
+                Portuguese, Romanian, Russian, Slovak, Slovenian, Spanish,
+                Swedish, and Ukrainian. It detects the language by itself.
+              </p>
+            </details>
+            <details>
+              <summary>How do I turn on cleanup?</summary>
+              <p>
+                Install <a href="https://ollama.com">Ollama</a>, then run
+                <code>ollama pull qwen3:8b</code>. hushtype already points at
+                Ollama on your Mac. For any other OpenAI-compatible server,
+                enter its address, key, and model in Refine settings.
+              </p>
+            </details>
+            <details>
+              <summary>Why does it need Accessibility access?</summary>
+              <p>
+                macOS requires it for an app to paste into other apps and to
+                hear your shortcut while another app is in front. hushtype also
+                uses it to read the front window's title and web address to pick
+                a mode. It reads selected text only if you turn that on for a
+                mode.
+              </p>
+            </details>
+            <details>
+              <summary>Can I change the shortcut?</summary>
+              <p>
+                Yes, in Dictation settings. By default a quick tap of
+                <kbd>⌥</kbd> <kbd>Space</kbd>
+                also works: tap once to start, tap again to stop.
+              </p>
+            </details>
+            <details>
+              <summary>
+                macOS says hushtype needs Accessibility again after an update.
+              </summary>
+              <p>
+                macOS ties that permission to the exact build of an app. Open
+                System Settings, Privacy &amp; Security, Accessibility, and turn
+                hushtype on again.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-row">
+        <a class="wordmark wordmark-small" href="/" aria-label="hushtype home">
+          <span class="wordmark-mark" aria-hidden="true"></span>
+          <span>hushtype</span>
+        </a>
+        <p>
+          Made by <a href="https://sideband.studio">Sideband Studio</a>. ©
+          2026.
+        </p>
+        <p><a href="/notices.txt">Third-party notices</a></p>
+      </div>
+    </footer>
+
+    <dialog class="dialog" id="dialog-mac" aria-labelledby="dialog-mac-title">
+      <form method="dialog" class="dialog-close-form">
+        <button class="dialog-close" aria-label="Close">×</button>
+      </form>
+      <img
+        src="/brand/icon-256.png"
+        width="64"
+        height="64"
+        alt=""
+        class="dialog-icon"
+      />
+      <h2 id="dialog-mac-title">Install hushtype</h2>
+      <p class="dialog-lede">
+        It takes one line in Terminal and a few minutes.
+      </p>
+      <p class="dialog-warning" data-intel-warning hidden>
+        This Mac appears to have an Intel processor. hushtype needs Apple
+        silicon (M1 or later).
+      </p>
+      <ol class="dialog-steps">
+        <li>
+          Open Terminal: press <kbd>⌘</kbd> <kbd>Space</kbd>, type
+          <b>Terminal</b>, press Return.
+        </li>
+        <li>
+          Paste this line and press Return:
+          <div class="command">
+            <!-- prettier-ignore -->
+            <code data-command>curl -fsSL https://hushtype.vercel.app/install.sh <wbr /><span class="nowrap">| bash</span></code>
+            <button class="copy-button" type="button" data-copy autofocus>
+              Copy
+            </button>
+          </div>
+        </li>
+        <li>When hushtype opens, allow Microphone and Accessibility.</li>
+      </ol>
+      <p class="dialog-fine">
+        Needs a Mac with Apple silicon and macOS 14 or later.
+        <a href="#install" data-close-dialog>Full instructions</a>
+      </p>
+    </dialog>
+
+    <dialog
+      class="dialog"
+      id="dialog-windows"
+      aria-labelledby="dialog-windows-title"
+    >
+      <form method="dialog" class="dialog-close-form">
+        <button class="dialog-close" aria-label="Close">×</button>
+      </form>
+      <p class="dialog-badge">Coming soon</p>
+      <h2 id="dialog-windows-title">hushtype isn't on Windows yet</h2>
+      <p class="dialog-lede">
+        hushtype runs on Macs with Apple silicon today. Windows support is
+        coming soon.
+      </p>
+      <div class="dialog-actions">
+        <form method="dialog">
+          <button class="button" autofocus>Got it</button>
+        </form>
+        <button
+          class="button button-quiet"
+          type="button"
+          data-open-dialog="dialog-mac"
+        >
+          Install on a Mac instead
+        </button>
+      </div>
+    </dialog>
+
+    <dialog class="dialog" id="dialog-ios" aria-labelledby="dialog-ios-title">
+      <form method="dialog" class="dialog-close-form">
+        <button class="dialog-close" aria-label="Close">×</button>
+      </form>
+      <p class="dialog-badge">On the way</p>
+      <h2 id="dialog-ios-title">hushtype for iPhone is on the way</h2>
+      <p class="dialog-lede">
+        For now, hushtype runs on Mac. Open this page on your Mac to install it.
+      </p>
+      <div class="dialog-actions">
+        <button class="button" type="button" data-copy-link autofocus>
+          Copy link
+        </button>
+        <form method="dialog">
+          <button class="button button-quiet">Got it</button>
+        </form>
+      </div>
+    </dialog>
+
+    <dialog
+      class="dialog"
+      id="dialog-other"
+      aria-labelledby="dialog-other-title"
+    >
+      <form method="dialog" class="dialog-close-form">
+        <button class="dialog-close" aria-label="Close">×</button>
+      </form>
+      <h2 id="dialog-other-title">hushtype runs on Mac</h2>
+      <p class="dialog-lede">
+        It needs a Mac with Apple silicon and macOS 14 or later. Windows support
+        is coming soon, and an iPhone version is on the way.
+      </p>
+      <div class="dialog-actions">
+        <form method="dialog">
+          <button class="button" autofocus>Got it</button>
+        </form>
+        <button
+          class="button button-quiet"
+          type="button"
+          data-open-dialog="dialog-mac"
+        >
+          Show Mac instructions
+        </button>
+      </div>
+    </dialog>
+
+    <p class="visually-hidden" aria-live="polite" data-live></p>
+  </body>
+</html>

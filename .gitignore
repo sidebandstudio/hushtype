@@ -45,3 +45,8 @@ result
 
 # Python bytecode (scripts/)
 __pycache__/
+
+# Website release build output
+/website/download/
+/website/.vercel/
+/website/notices.txt
