@@ -1,0 +1,146 @@
+[
+  {
+    "id": "d01-real-cutoff-restart",
+    "mode": "messaging",
+    "context": {
+      "app_name": "Messages",
+      "bundle_id": "com.apple.MobileSMS",
+      "window_title": "Maya"
+    },
+    "raw": "I'm not gonna lie, it's actually pretty pretty useful. And right now this is all running locally on my Mac, so you do act you actually do not need internet. But I do wanna potentially add support for a better model that would be able to use something hosted on like my Mac Mini, for example.",
+    "contains": [
+      "I'm not gonna lie",
+      "pretty useful",
+      "need internet",
+      "I do wanna",
+      "Mac Mini"
+    ],
+    "absent": ["pretty pretty", "do act", "act you", "act like"]
+  },
+  {
+    "id": "d02-real-keep-emphasis",
+    "mode": "messaging",
+    "context": {
+      "app_name": "Messages",
+      "bundle_id": "com.apple.MobileSMS",
+      "window_title": "Maya"
+    },
+    "raw": "No, that was that was very, very, very mean. I just wanted to let you know that. And I won't forgive you for that.",
+    "expected": "No, that was very, very, very mean. I just wanted to let you know that. And I won't forgive you for that."
+  },
+  {
+    "id": "d03-real-filler",
+    "mode": "messaging",
+    "context": {
+      "app_name": "Messages",
+      "bundle_id": "com.apple.MobileSMS",
+      "window_title": "Maya"
+    },
+    "raw": "Yeah, I like it with hold better. Um I'm trying different keys right now.",
+    "expected": "Yeah, I like it with hold better. I'm trying different keys right now."
+  },
+  {
+    "id": "d04-real-long-unchanged-meaning",
+    "mode": "messaging",
+    "context": {
+      "app_name": "Messages",
+      "bundle_id": "com.apple.MobileSMS",
+      "window_title": "Maya"
+    },
+    "raw": "This is me testing Hush type right now. So far, the way I feel about it is that it definitely needs a more casual tone. That's something about Whisper Flow that I really like that had casual versus more serious, and then just like a good middle ground.",
+    "contains": [
+      "This is me testing Hush type right now",
+      "definitely needs a more casual tone",
+      "casual versus more serious",
+      "middle ground"
+    ]
+  },
+  {
+    "id": "d05-cutoff-probably",
+    "raw": "I'm gonna prob I'm probably gonna head out early today.",
+    "expected": "I'm probably gonna head out early today."
+  },
+  {
+    "id": "d06-cutoff-definitely",
+    "raw": "We need to def we definitely need to fix the login page.",
+    "expected": "We definitely need to fix the login page."
+  },
+  {
+    "id": "d07-restart-noun-phrase",
+    "raw": "The the deploy fail the deployment failed last night.",
+    "expected": "The deployment failed last night."
+  },
+  {
+    "id": "d08-restart-question",
+    "raw": "Can you, can you send me the the file when you get a chance?",
+    "expected": "Can you send me the file when you get a chance?"
+  },
+  {
+    "id": "d09-restart-after-filler",
+    "raw": "Uh, we could maybe we could just ship it on Monday.",
+    "contains": ["just ship it on Monday."],
+    "absent": ["Uh", "could maybe we could", "could, maybe we could"]
+  },
+  {
+    "id": "d10-stutter-contraction",
+    "raw": "It's it's not that I don't like it, it's just that it's kind of slow.",
+    "expected": "It's not that I don't like it, it's just that it's kind of slow."
+  },
+  {
+    "id": "d11-keep-grammatical-repeat",
+    "raw": "I know that that sounds strange, but I had had enough.",
+    "expected": "I know that that sounds strange, but I had had enough."
+  },
+  {
+    "id": "d12-keep-emphasis",
+    "raw": "It's really, really important that we finish this today.",
+    "expected": "It's really, really important that we finish this today."
+  },
+  {
+    "id": "d13-restart-tense",
+    "raw": "I'll send I sent the invoice yesterday.",
+    "expected": "I sent the invoice yesterday."
+  },
+  {
+    "id": "d14-double-repeats",
+    "raw": "Let's meet at the at the coffee place near near my office.",
+    "expected": "Let's meet at the coffee place near my office."
+  },
+  {
+    "id": "d15-several-repeats",
+    "raw": "I I think the the new version is is way faster.",
+    "expected": "I think the new version is way faster."
+  },
+  {
+    "id": "d16-cutoff-want",
+    "raw": "Yeah so the the thing is we wa we want it to feel fast.",
+    "contains": ["the thing is", "we want it to feel fast"],
+    "absent": ["the the", "wa we"]
+  },
+  {
+    "id": "d17-long-restarts",
+    "mode": "messaging",
+    "context": {
+      "app_name": "Messages",
+      "bundle_id": "com.apple.MobileSMS",
+      "window_title": "Maya"
+    },
+    "raw": "Okay so I was thinking that we could, we could probably just use the, the Mac Mini as a server for it, and then the laptop would just send the the audio over.",
+    "contains": [
+      "we could probably just use the Mac Mini as a server",
+      "send the audio over"
+    ],
+    "absent": ["could, we could", "the, the", "the the"]
+  },
+  {
+    "id": "d18-keep-plain-sentence",
+    "mode": "messaging",
+    "context": {
+      "app_name": "Messages",
+      "bundle_id": "com.apple.MobileSMS",
+      "window_title": "Maya"
+    },
+    "raw": "Yes, it's literally firing it every five hours.",
+    "expected": "Yes, it's literally firing it every five hours."
+  }
+]

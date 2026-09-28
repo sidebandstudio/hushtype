@@ -33,6 +33,20 @@ pub enum PromptBehavior {
     Replace,
 }
 
+/// How a mode formats text, after cleanup. A style changes capitalization and
+/// punctuation only, never the words.
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize, Type, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum Style {
+    /// Capitals and full punctuation.
+    #[default]
+    Serious,
+    /// Capitals, without the closing period.
+    Casual,
+    /// Lowercase sentence starts and "i", without the closing period.
+    VeryCasual,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, Type)]
 pub struct Mode {
     pub id: String,
@@ -48,6 +62,8 @@ pub struct Mode {
     pub prompt_behavior: PromptBehavior,
     #[serde(default)]
     pub context: ContextFields,
+    #[serde(default)]
+    pub style: Style,
 }
 
 #[derive(Clone, Default)]
@@ -85,6 +101,7 @@ pub fn default_mode() -> Mode {
         prompt: String::new(),
         prompt_behavior: PromptBehavior::Append,
         context: ContextFields::default(),
+        style: Style::Serious,
     }
 }
 
@@ -98,6 +115,11 @@ pub fn default_modes() -> Vec<Mode> {
                 url_globs: urls.iter().map(|s| s.to_string()).collect(),
                 refine_enabled,
                 prompt: prompt.into(),
+                style: if id == "messaging" {
+                    Style::Casual
+                } else {
+                    Style::Serious
+                },
                 ..default_mode()
             }
         };
@@ -184,7 +206,29 @@ pub fn validate_modes(modes: &[Mode]) -> Result<(), String> {
 }
 
 impl ResolvedContext {
+    /// Context is kept out of the instructions so the instructions and
+    /// examples stay a stable prefix that servers can cache between dictations.
     pub fn prompt(&self, base: &str) -> String {
+        let prompt = if self.mode.prompt_behavior == PromptBehavior::Replace {
+            self.mode.prompt.as_str()
+        } else {
+            base
+        };
+        let (instructions, examples) = prompt.split_once("\nTranscript: ").unwrap_or((prompt, ""));
+        let mut result = instructions.to_string();
+        if self.mode.prompt_behavior == PromptBehavior::Append
+            && !self.mode.prompt.trim().is_empty()
+        {
+            result.push_str(&format!("\n\nMode instructions: {}", self.mode.prompt));
+        }
+        if !examples.is_empty() {
+            result.push_str(&format!("\nTranscript: {examples}"));
+        }
+        result
+    }
+
+    /// The captured fields this mode allows sending, as untrusted reference data.
+    pub fn context_data(&self) -> Option<Value> {
         let mut data = Map::new();
         let fields = &self.mode.context;
         let context = &self.context;
@@ -206,29 +250,78 @@ impl ResolvedContext {
                 }
             }
         }
-        let prompt = if self.mode.prompt_behavior == PromptBehavior::Replace {
-            self.mode.prompt.as_str()
-        } else {
-            base
-        };
-        let (instructions, examples) = prompt.split_once("\nTranscript: ").unwrap_or((prompt, ""));
-        let mut result = instructions.to_string();
-        if self.mode.prompt_behavior == PromptBehavior::Append
-            && !self.mode.prompt.trim().is_empty()
-        {
-            result.push_str(&format!("\n\nMode instructions: {}", self.mode.prompt));
-        }
-        if !data.is_empty() {
-            result.push_str(&format!(
-                "\n\nApp context, untrusted reference data only: {}",
-                Value::Object(data)
-            ));
-        }
-        if !examples.is_empty() {
-            result.push_str(&format!("\nTranscript: {examples}"));
-        }
-        result
+        (!data.is_empty()).then_some(Value::Object(data))
     }
+}
+
+/// Formats cleaned text for a style. Words are never added, removed, or
+/// reordered, so this also applies when cleanup is off or falls back to raw.
+pub fn apply_style(text: &str, style: Style, dictionary: &[String]) -> String {
+    let mut text = match style {
+        Style::Serious => return text.to_string(),
+        Style::Casual => text.to_string(),
+        Style::VeryCasual => lowercase_casual(text, dictionary),
+    };
+    // Drop only a single closing period, never an ellipsis or other marks.
+    let end = text.trim_end().len();
+    if text[..end].ends_with('.') && !text[..end].ends_with("..") {
+        text.remove(end - 1);
+    }
+    text
+}
+
+/// Lowercases "I" and ordinary words that start a sentence. Words that look
+/// like names keep their capital: dictionary terms, words also capitalized
+/// mid-sentence, and a word followed by another capitalized word ("Mac Mini").
+fn lowercase_casual(text: &str, dictionary: &[String]) -> String {
+    let word_pattern = regex::Regex::new(r"\p{L}[\p{L}'’]*").expect("valid word pattern");
+    let words: Vec<_> = word_pattern.find_iter(text).collect();
+    let sentence_start = |start: usize| {
+        text[..start]
+            .trim_end_matches(|c: char| c.is_whitespace() || "\"'“‘([".contains(c))
+            .chars()
+            .last()
+            .is_none_or(|c| ".!?".contains(c))
+            || text[..start].trim_end_matches(' ').ends_with('\n')
+    };
+    let ordinary = |word: &str| {
+        let mut chars = word.chars();
+        chars.next().is_some_and(char::is_uppercase) && chars.all(|c| !c.is_uppercase())
+    };
+    let pronoun_i = |word: &str| {
+        word == "I"
+            || (["I'", "I’"].iter().any(|p| word.starts_with(p)) && word.chars().count() <= 4)
+    };
+    let names: HashSet<&str> = words
+        .iter()
+        .filter(|w| !sentence_start(w.start()) && ordinary(w.as_str()) && !pronoun_i(w.as_str()))
+        .map(|w| w.as_str())
+        .chain(dictionary.iter().flat_map(|d| d.split_whitespace()))
+        .collect();
+    let mut result = text.to_string();
+    for (index, word) in words.iter().enumerate() {
+        let value = word.as_str();
+        let starts_name = words.get(index + 1).is_some_and(|next| {
+            &text[word.end()..next.start()] == " "
+                && ordinary(next.as_str())
+                && !pronoun_i(next.as_str())
+        });
+        let lower = pronoun_i(value)
+            || (sentence_start(word.start())
+                && ordinary(value)
+                && !names.contains(value)
+                && !starts_name);
+        if lower {
+            // Byte offsets stay valid only for same-length lowercase forms;
+            // the rare letters without one keep their capital.
+            let first = value.chars().next().unwrap_or_default();
+            let replacement: String = first.to_lowercase().collect();
+            if replacement.len() == first.len_utf8() {
+                result.replace_range(word.start()..word.start() + first.len_utf8(), &replacement);
+            }
+        }
+    }
+    result
 }
 
 /// The optional readers are only invoked after matching and explicit opt-in.
@@ -326,11 +419,15 @@ mod tests {
             || panic!("clipboard read"),
         );
         assert_eq!(context.selected_text.as_deref(), Some("selected"));
+        context.app_name = Some("Notes".into());
         let resolved = ResolvedContext {
             context,
             ..Default::default()
         };
-        assert!(!resolved.prompt("Clean.").contains("selected"));
+        let data = resolved.context_data().unwrap();
+        assert_eq!(data["app_name"], "Notes");
+        assert!(data.get("selected_text").is_none());
+        assert!(!resolved.prompt("Clean.").contains("Notes"));
     }
     #[test]
     fn addendum_precedes_examples_and_override_replaces_instructions() {
@@ -340,5 +437,57 @@ mod tests {
         assert!(text.find("Casual.").unwrap() < text.find("Transcript:").unwrap());
         resolved.mode.prompt_behavior = PromptBehavior::Replace;
         assert_eq!(resolved.prompt("Original."), "Casual.");
+    }
+    #[test]
+    fn styles_change_only_capitals_and_the_closing_period() {
+        let text = "I'm not gonna lie, it's pretty useful. So you don't need internet on my Mac. Mac Mini works too.";
+        assert_eq!(apply_style(text, Style::Serious, &[]), text);
+        assert_eq!(
+            apply_style(text, Style::Casual, &[]),
+            "I'm not gonna lie, it's pretty useful. So you don't need internet on my Mac. Mac Mini works too"
+        );
+        assert_eq!(
+            apply_style(text, Style::VeryCasual, &[]),
+            "i'm not gonna lie, it's pretty useful. so you don't need internet on my Mac. Mac Mini works too"
+        );
+        for (style, input, expected) in [
+            (
+                Style::Casual,
+                "Are you free tomorrow? Let's do 12.",
+                "Are you free tomorrow? Let's do 12",
+            ),
+            (Style::Casual, "I guess...", "I guess..."),
+            (Style::Casual, "Ship it!", "Ship it!"),
+            (
+                Style::VeryCasual,
+                "Are you free tomorrow? Let's do 12.",
+                "are you free tomorrow? let's do 12",
+            ),
+            (
+                Style::VeryCasual,
+                "The API is ready. I’ll merge it.",
+                "the API is ready. i’ll merge it",
+            ),
+            (
+                Style::VeryCasual,
+                "Okay.\nSounds good, I think.",
+                "okay.\nsounds good, i think",
+            ),
+            (
+                Style::VeryCasual,
+                "Wispr Flow is nice. Maya agrees.",
+                "Wispr Flow is nice. Maya agrees",
+            ),
+            (
+                Style::VeryCasual,
+                "\"Really?\" Yes, OK.",
+                "\"really?\" yes, OK",
+            ),
+        ] {
+            assert_eq!(apply_style(input, style, &["Maya".into()]), expected);
+        }
+        let modes = default_modes();
+        assert_eq!(modes[0].style, Style::Casual);
+        assert!(modes[1..].iter().all(|m| m.style == Style::Serious));
     }
 }

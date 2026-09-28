@@ -119,6 +119,9 @@ export function RefineSettings() {
                 }
                 required
               />
+              <span className="text-xs text-mid-gray">
+                {t("hushtype.refine.timeoutDescription")}
+              </span>
             </label>
             <label className="grid gap-1 text-sm">
               {t("hushtype.refine.maxInputChars")}

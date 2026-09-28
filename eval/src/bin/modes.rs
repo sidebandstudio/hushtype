@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let settings = refine::RefineSettings::default();
     let mut warm = settings.clone();
     warm.timeout_ms = 120_000;
-    let _ = refine::run(&warm, "hello", base, &[]).await;
+    let _ = refine::run(&warm, "hello", base, &[], None).await;
     let mut rows = Vec::new();
     for bundle in [
         "com.tinyspeck.slackmacgap",
@@ -28,7 +28,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let resolved = modes::ResolvedContext { mode, context };
         let mut config = settings.clone();
         config.enabled = resolved.mode.refine_enabled;
-        let result = refine::run(&config, raw, &resolved.prompt(base), &[]).await;
+        let result = refine::run(
+            &config,
+            raw,
+            &resolved.prompt(base),
+            &[],
+            resolved.context_data().as_ref(),
+        )
+        .await;
         rows.push(serde_json::json!({"fixture_bundle":bundle,"mode":resolved.mode.name,"raw":raw,"result":result}));
     }
     println!(

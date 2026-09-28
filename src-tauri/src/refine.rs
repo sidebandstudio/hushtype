@@ -108,12 +108,23 @@ fn client() -> Result<&'static Client, String> {
         .map_err(Clone::clone)
 }
 
+/// The configured timeout covers a typical short dictation. Generation time
+/// grows with length, so longer input gets proportionally more time, up to
+/// four times the setting.
+pub fn deadline(settings: &RefineSettings, raw: &str) -> Duration {
+    const TYPICAL_CHARS: u64 = 200;
+    let chars = (raw.chars().count() as u64).clamp(TYPICAL_CHARS, 4 * TYPICAL_CHARS);
+    Duration::from_millis(settings.timeout_ms * chars / TYPICAL_CHARS)
+}
+
 /// Returns raw text on every optional-transform failure, including a whole-stage timeout.
+/// `context` is untrusted reference data about the destination app.
 pub async fn run(
     settings: &RefineSettings,
     raw: &str,
     prompt: &str,
     dictionary: &[String],
+    context: Option<&Value>,
 ) -> RefineResult {
     let start = Instant::now();
     let result = if raw.trim().is_empty() {
@@ -124,8 +135,8 @@ pub async fn run(
         Err("raw_configuration".into())
     } else {
         match tokio::time::timeout(
-            Duration::from_millis(settings.timeout_ms),
-            complete_chunks(settings, raw, prompt, dictionary),
+            deadline(settings, raw),
+            complete_chunks(settings, raw, prompt, dictionary, context),
         )
         .await
         {
@@ -152,11 +163,12 @@ async fn complete(
     raw: &str,
     prompt: &str,
     dictionary: &[String],
+    context: Option<&Value>,
 ) -> Result<(String, String), String> {
     let url = endpoint_url(&settings.base_url).map_err(|_| "raw_configuration")?;
     let mut body = json!({
         "model": settings.model.trim(),
-        "messages": messages(prompt, raw, dictionary),
+        "messages": messages(prompt, raw, dictionary, context),
         "stream": false,
         "temperature": 0,
         "reasoning_effort": "none",
@@ -291,6 +303,7 @@ async fn complete_chunks(
     raw: &str,
     prompt: &str,
     dictionary: &[String],
+    context: Option<&Value>,
 ) -> Result<(String, String), String> {
     let mut limit = settings.max_input_chars;
     'retry: loop {
@@ -298,7 +311,7 @@ async fn complete_chunks(
         let multiple = parts.len() > 1;
         let mut output = String::new();
         for (index, part) in parts.iter().enumerate() {
-            match complete(settings, part, prompt, dictionary).await {
+            match complete(settings, part, prompt, dictionary, context).await {
                 Ok((text, _)) => {
                     output.push_str(&text);
                     if index + 1 < parts.len() {
@@ -331,8 +344,10 @@ async fn complete_chunks(
 }
 
 /// Plain-file examples become conversation pairs, giving the model examples
-/// of the same JSON input envelope used for actual dictation.
-fn messages(prompt: &str, raw: &str, dictionary: &[String]) -> Vec<Value> {
+/// of the same JSON input envelope used for actual dictation. App context
+/// rides in the final message only, so everything before it stays a stable,
+/// cacheable prefix.
+fn messages(prompt: &str, raw: &str, dictionary: &[String], context: Option<&Value>) -> Vec<Value> {
     let sections: Vec<_> = prompt.split("\nTranscript: ").collect();
     let examples: Option<Vec<_>> = sections[1..]
         .iter()
@@ -360,8 +375,23 @@ fn messages(prompt: &str, raw: &str, dictionary: &[String]) -> Vec<Value> {
             messages.push(json!({"role":"assistant","content":output.trim()}));
         }
     }
-    messages.push(json!({"role":"user","content":json!({"dictation":raw}).to_string()}));
+    let mut input = json!({"dictation": raw});
+    if let Some(context) = context {
+        input["app_context"] = context.clone();
+    }
+    messages.push(json!({"role":"user","content":input.to_string()}));
     messages
+}
+
+/// Earlier builds copied the bundled prompt into app data on first read, which
+/// pinned it there. A copy that still matches one of these stock prompts was
+/// never edited, so the current bundled prompt replaces it.
+pub fn is_retired_default_prompt(prompt: &str) -> bool {
+    use sha2::{Digest, Sha256};
+    const RETIRED: &[&str] = &["09f1a959659db7e83f7073c6377bfd01e288de8765a1be7985394e042724ea70"];
+    let digest = Sha256::digest(prompt.as_bytes());
+    let hex: String = digest.iter().map(|b| format!("{b:02x}")).collect();
+    RETIRED.contains(&hex.as_str())
 }
 
 pub fn clean_output(content: &str) -> String {

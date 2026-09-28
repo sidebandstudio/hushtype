@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { commands, type Mode, type ContextFields } from "@/bindings";
+import {
+  commands,
+  type Mode,
+  type ContextFields,
+  type Style,
+} from "@/bindings";
 import { useSettings } from "@/hooks/useSettings";
 import { SettingsGroup } from "@/components/ui/SettingsGroup";
 import { Input } from "@/components/ui/Input";
@@ -16,6 +21,7 @@ const contextDefaults: ContextFields = {
   selected_text: false,
   clipboard: false,
 };
+const styles: Style[] = ["serious", "casual", "very_casual"];
 const lines = (text: string) =>
   text
     .split("\n")
@@ -80,13 +86,19 @@ export function ModesSettings() {
               <span className="mode-label">
                 <strong>{mode.name || t("hushtype.modes.unnamed")}</strong>
                 <small>
-                  {mode.id === "default"
-                    ? t("hushtype.ui.modeFallback")
-                    : t("hushtype.ui.modeMatchers", {
-                        count:
-                          (mode.bundle_ids?.length ?? 0) +
-                          (mode.url_globs?.length ?? 0),
-                      })}
+                  {t("hushtype.ui.modeSummary", {
+                    matchers:
+                      mode.id === "default"
+                        ? t("hushtype.ui.modeFallback")
+                        : t("hushtype.ui.modeMatchers", {
+                            count:
+                              (mode.bundle_ids?.length ?? 0) +
+                              (mode.url_globs?.length ?? 0),
+                          }),
+                    style: t(
+                      `hushtype.modes.styles.${mode.style ?? "serious"}.label`,
+                    ),
+                  })}
                 </small>
               </span>
               <span
@@ -164,6 +176,35 @@ export function ModesSettings() {
                   </div>
                 </>
               )}
+              <fieldset className="space-y-2">
+                <legend className="text-sm">{t("hushtype.modes.style")}</legend>
+                <p className="text-xs text-mid-gray">
+                  {t("hushtype.modes.styleDescription")}
+                </p>
+                <div className="style-options">
+                  {styles.map((style) => (
+                    <label key={style} className="style-option">
+                      <input
+                        type="radio"
+                        name={`style-${mode.id}`}
+                        value={style}
+                        checked={(mode.style ?? "serious") === style}
+                        disabled={busy}
+                        onChange={() => update(index, { style })}
+                      />
+                      <strong>
+                        {t(`hushtype.modes.styles.${style}.label`)}
+                      </strong>
+                      <small>
+                        {t(`hushtype.modes.styles.${style}.detail`)}
+                      </small>
+                      <span className="style-example">
+                        {t(`hushtype.modes.styles.${style}.example`)}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
               <ToggleSwitch
                 label={t("hushtype.modes.refine")}
                 description={t("hushtype.modes.refineDescription")}
@@ -248,6 +289,7 @@ export function ModesSettings() {
             prompt: "",
             prompt_behavior: "append",
             context: { ...contextDefaults },
+            style: "serious",
           };
           setModes([...modes.slice(0, -1), added, ...modes.slice(-1)]);
           setExpanded(added.id);
