@@ -2,6 +2,14 @@
   "tray": {
     "settings": "Settings...",
     "checkUpdates": "Check for Updates...",
+    "updateAvailable": "Update to hushtype {{version}}...",
+    "updateNotificationTitle": "hushtype {{version}} is available",
+    "updateNotificationBody": "Choose Update to hushtype in the menu bar to install it.",
+    "updateDialogBody": "Terminal opens and runs the installer. hushtype quits, is replaced, and asks for Accessibility again.",
+    "updateNow": "Update",
+    "later": "Later",
+    "upToDate": "hushtype {{version}} is up to date.",
+    "updateCheckFailed": "Couldn't check for updates. Try again later.",
     "copyLastTranscript": "Copy Last Transcript",
     "unloadModel": "Unload Model",
     "model": "Model",
@@ -614,6 +622,16 @@
         "title": "Version",
         "description": "Current version of hushtype"
       },
+      "update": {
+        "title": "Updates",
+        "description": "Compares this build with the version published at hushtype.vercel.app.",
+        "available": "hushtype {{version}} is available. Updating opens Terminal, replaces the app, and asks for Accessibility again.",
+        "check": "Check for updates",
+        "install": "Update now",
+        "upToDate": "hushtype {{version}} is up to date.",
+        "failed": "Couldn't check for updates. Try again later.",
+        "installFailed": "Couldn't start the updater. Run the install command from hushtype.vercel.app instead."
+      },
       "whatsNewUpdates": {
         "label": "Show What's New",
         "description": "Show release notes after hushtype updates"
@@ -638,19 +656,7 @@
     }
   },
   "footer": {
-    "checkingUpdates": "Checking for updates...",
-    "updateAvailableShort": "Update available",
-    "upToDate": "Up to date",
-    "updateCheckingDisabled": "Update Checking Disabled",
-    "downloading": "Downloading... {{progress}}%",
-    "installing": "Installing...",
-    "preparing": "Preparing...",
-    "checkForUpdates": "Check for updates",
-    "portableUpdateTitle": "Manual update required",
-    "portableUpdateMessage": "Portable installs cannot be updated automatically. Download the installer for your system below, run it, and install to the same folder — your Data/ folder (settings, models, recordings) is kept in place.",
-    "portableUpdateButton": "Download installer",
-    "portableUpdateBrowseMessage": "Portable installs cannot be updated automatically. Download the latest version for your system from GitHub Releases and install it to the same folder — your Data/ folder (settings, models, recordings) is kept in place.",
-    "portableUpdateBrowseButton": "Open GitHub Releases"
+    "updateAvailableShort": "Update available"
   },
   "whatsNew": {
     "title": "New in hushtype v{{version}}"

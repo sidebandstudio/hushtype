@@ -456,6 +456,21 @@ details[open] > .disclosure-heading svg:last-child {
   align-items: center;
   gap: 18px;
 }
+.footer-update {
+  padding: 3px 10px;
+  border: 1px solid var(--color-logo-primary);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-logo-primary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.footer-update:hover {
+  background: var(--color-logo-primary);
+  color: var(--color-on-accent);
+}
 .shortcut-intro {
   padding: 20px 22px;
   background: var(--color-well);

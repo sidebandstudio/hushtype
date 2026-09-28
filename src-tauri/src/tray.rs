@@ -63,7 +63,8 @@ struct MenuInputs {
     /// `(id, name)` of downloaded models, sorted by name.
     downloaded_models: Vec<(String, String)>,
     locale: String,
-    update_checks_enabled: bool,
+    /// Newer published version from the last update check.
+    update_available: Option<String>,
 }
 
 /// Complete description of what the tray should look like.
@@ -358,7 +359,7 @@ fn compute_desired(app: &AppHandle, icon_state: TrayIconState) -> TrayDesired {
             selected_model: settings.selected_model,
             downloaded_models,
             locale: settings.app_language,
-            update_checks_enabled: settings.update_checks_enabled,
+            update_available: crate::update_check::available_version(app),
         },
     }
 }
@@ -534,9 +535,27 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<(Menu<tauri
         app,
         "check_updates",
         &strings.check_updates,
-        inputs.update_checks_enabled,
+        true,
         None::<&str>,
     )?;
+    // A newer published version gets its own entry right below the version
+    // line, so the menu bar shows the update without opening settings.
+    let update_available = if let Some(version) = &inputs.update_available {
+        let template = if strings.update_available.is_empty() {
+            get_tray_translations(Some("en".to_string())).update_available
+        } else {
+            strings.update_available.clone()
+        };
+        Some(MenuItem::with_id(
+            app,
+            "update_available",
+            &template.replace("{{version}}", version),
+            true,
+            None::<&str>,
+        )?)
+    } else {
+        None
+    };
     let copy_last_transcript_i = MenuItem::with_id(
         app,
         "copy_last_transcript",
@@ -607,23 +626,29 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<(Menu<tauri
         )?
     };
 
-    // When update checks are forced off (always, in hushtype), the item is
+    // When update checks are forced off by the environment, the item is
     // dropped from the menu rather than shown disabled — it can never do
     // anything in that case, and a disabled item still shifts every entry
-    // below it by one position. A manually-disabled
-    // toggle in Debug Settings keeps the old greyed-out behavior via the
-    // enabled flag.
+    // below it by one position. The user's automatic-check setting does not
+    // affect it: a manual check is explicit.
     if settings::update_checks_forced_disabled() {
         menu.remove(&check_updates_i)?;
     }
 
     // Both layouts start with [version, separator, ...]; slot the warning in
-    // right below the version line so it's the first actionable thing seen.
+    // right below the version line so it's the first actionable thing seen,
+    // then the update entry.
     let mut tooltip = version_label;
+    let mut insert_at = 2;
     if let Some(warning_item) = secure_input_warning {
-        menu.insert(&warning_item, 2)?;
-        menu.insert(&separator()?, 3)?;
+        menu.insert(&warning_item, insert_at)?;
+        menu.insert(&separator()?, insert_at + 1)?;
+        insert_at += 2;
         tooltip = format!("{} — {}", tooltip, warning_item.text().unwrap_or_default());
+    }
+    if let Some(update_item) = update_available {
+        menu.insert(&update_item, insert_at)?;
+        menu.insert(&separator()?, insert_at + 1)?;
     }
 
     Ok((menu, tooltip))
@@ -728,8 +753,15 @@ mod tests {
             selected_model: "small".to_string(),
             downloaded_models: vec![("small".to_string(), "Small".to_string())],
             locale: "en".to_string(),
-            update_checks_enabled: true,
+            update_available: None,
         }
+    }
+
+    #[test]
+    fn a_published_update_changes_the_menu_inputs() {
+        let mut with_update = inputs(false);
+        with_update.update_available = Some("0.3.1".to_string());
+        assert_ne!(inputs(false), with_update);
     }
 
     #[test]

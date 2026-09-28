@@ -1208,10 +1208,12 @@ fn apply_settings_migrations(
     updated
 }
 
-/// Update checks are always forced off (without touching the persisted
-/// setting): hushtype makes no network requests beyond the refine endpoint.
+/// Update checks can be forced off for a whole install, without touching the
+/// persisted setting, by launching with `HUSHTYPE_DISABLE_UPDATER` set. The
+/// environment does not change during a run, so callers may treat this as
+/// constant.
 pub fn update_checks_forced_disabled() -> bool {
-    true
+    crate::utils::env_flag_enabled("HUSHTYPE_DISABLE_UPDATER")
 }
 
 /// Effective updater state: the user's stored preference, overridden to `false`

@@ -1,7 +1,8 @@
 #!/bin/bash
 # Packages the built app for the website: zips hushtype.app into
-# website/download/, writes its SHA-256 and size into website/install.sh, and
-# copies THIRD_PARTY_NOTICES to website/notices.txt.
+# website/download/, writes its SHA-256 and size into website/install.sh, writes
+# the version to website/latest.json for the app's update check, and copies
+# THIRD_PARTY_NOTICES to website/notices.txt.
 #
 # Build the app first:
 #   DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
@@ -39,5 +40,6 @@ text = re.sub(r'^APP_SIZE=".*"$', f'APP_SIZE="{size}"', text, flags=re.M)
 open(path, "w").write(text)
 PY
 
+printf '{ "version": "%s" }\n' "$version" > "$repo_dir/website/latest.json"
 cp "$repo_dir/THIRD_PARTY_NOTICES" "$repo_dir/website/notices.txt"
 printf 'Packaged %s (%s, sha256 %s)\n' "$zip_name" "$size" "$sha"
