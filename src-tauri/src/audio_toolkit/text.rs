@@ -739,6 +739,20 @@ mod tests {
     }
 
     #[test]
+    fn test_apply_custom_words_fixes_split_and_misheard_names_at_default_threshold() {
+        // A real Parakeet transcript. Refine models cannot be relied on for
+        // dictionary spellings, so this deterministic stage has to catch them.
+        // The transcript's capital H carries over, as for any matched word.
+        let text = "This is me testing Hush type right now. That's something about Whisper Flow that I really like.";
+        let custom_words = vec!["hushtype".to_string(), "Wispr Flow".to_string()];
+        let result = apply_custom_words(text, &custom_words, 0.18);
+        assert_eq!(
+            result,
+            "This is me testing Hushtype right now. That's something about Wispr Flow that I really like."
+        );
+    }
+
+    #[test]
     fn test_apply_custom_words_ngram_three_words() {
         let text = "use Chat G P T for this";
         let custom_words = vec!["ChatGPT".to_string()];

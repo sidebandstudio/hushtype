@@ -5,6 +5,10 @@
 
 
 export const commands = {
+/**
+ * An edited refine.txt in app data wins. Otherwise the bundled prompt is read
+ * directly, so prompt improvements reach everyone who has not edited it.
+ */
 async getRefinePrompt() : Promise<Result<string, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_refine_prompt") };
@@ -1089,7 +1093,7 @@ key_down: number; key_up: number; flags_changed: number; mouse: number; duration
 export type KeyboardImplementation = "tauri" | "native"
 export type LLMPrompt = { id: string; name: string; prompt: string }
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error"
-export type Mode = { id: string; name: string; bundle_ids?: string[]; url_globs?: string[]; refine_enabled: boolean; prompt?: string; prompt_behavior?: PromptBehavior; context?: ContextFields }
+export type Mode = { id: string; name: string; bundle_ids?: string[]; url_globs?: string[]; refine_enabled: boolean; prompt?: string; prompt_behavior?: PromptBehavior; context?: ContextFields; style?: Style }
 export type ModelInfo = { id: string; name: string; description: string; filename: string; source: ModelSource; size_mb: number; is_downloaded: boolean; is_downloading: boolean; partial_size: number; is_directory: boolean; engine_type: EngineType; accuracy_score: number; speed_score: number; supports_translation: boolean; is_recommended: boolean; supported_languages: string[]; supports_language_selection: boolean; is_custom: boolean; supports_streaming: boolean; supports_language_detection: boolean }
 export type ModelLoadStatus = { is_loaded: boolean; current_model: string | null }
 /**
@@ -1209,6 +1213,23 @@ export type StreamTextEvent = { committed: string; tentative: string }
  * Semantic kind of "working" phase, used to localize the spinner label.
  */
 export type StreamWorkKind = "transcribing" | "polishing"
+/**
+ * How a mode formats text, after cleanup. A style changes capitalization and
+ * punctuation only, never the words.
+ */
+export type Style = 
+/**
+ * Capitals and full punctuation.
+ */
+"serious" | 
+/**
+ * Capitals, without the closing period.
+ */
+"casual" | 
+/**
+ * Lowercase sentence starts and "i", without the closing period.
+ */
+"very_casual"
 /**
  * UI appearance mode. `System` follows the OS `prefers-color-scheme`; `Light`
  * and `Dark` force one of the two palettes the app ships.

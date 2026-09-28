@@ -1194,6 +1194,17 @@ fn apply_settings_migrations(
         updated = true;
     }
 
+    // Styles arrived after modes. The built-in Messaging mode gets the Casual
+    // default a fresh install has; every other stored mode stays Serious.
+    if let Some(stored_modes) = settings_value.get("modes").and_then(|v| v.as_array()) {
+        for (mode, stored) in settings.modes.iter_mut().zip(stored_modes) {
+            if mode.id == "messaging" && stored.get("style").is_none() {
+                mode.style = crate::modes::Style::Casual;
+                updated = true;
+            }
+        }
+    }
+
     updated
 }
 
@@ -1572,6 +1583,32 @@ mod tests {
         assert!(apply_settings_migrations(&mut settings, &raw));
         assert_eq!(settings.overlay_style, OverlayStyle::Live);
         assert_eq!(settings.overlay_position, OverlayPosition::Top);
+    }
+
+    #[test]
+    fn style_migration_makes_stored_messaging_casual_once() {
+        let mut stored = serde_json::to_value(get_default_settings()).unwrap();
+        for mode in stored["modes"].as_array_mut().unwrap() {
+            mode.as_object_mut().unwrap().remove("style");
+        }
+        let mut settings: AppSettings = serde_json::from_value(stored.clone()).unwrap();
+        assert!(settings
+            .modes
+            .iter()
+            .all(|m| m.style == crate::modes::Style::Serious));
+
+        assert!(apply_settings_migrations(&mut settings, &stored));
+        assert_eq!(settings.modes[0].id, "messaging");
+        assert_eq!(settings.modes[0].style, crate::modes::Style::Casual);
+        assert!(settings.modes[1..]
+            .iter()
+            .all(|m| m.style == crate::modes::Style::Serious));
+
+        // A saved choice, including Serious for Messaging, is never overridden.
+        settings.modes[0].style = crate::modes::Style::Serious;
+        let saved = serde_json::to_value(&settings).unwrap();
+        assert!(!apply_settings_migrations(&mut settings, &saved));
+        assert_eq!(settings.modes[0].style, crate::modes::Style::Serious);
     }
 
     #[test]

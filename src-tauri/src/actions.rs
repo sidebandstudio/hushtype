@@ -209,6 +209,7 @@ async fn process_for_mode(
         &final_text,
         &prompt,
         &settings.custom_words,
+        context.context_data().as_ref(),
     )
     .await;
     if context.mode.id == "code"
@@ -218,7 +219,11 @@ async fn process_for_mode(
         result.outcome = "raw_rejected_literal_token".into();
         warn!("Refine skipped: raw_rejected_literal_token");
     }
-    final_text = crate::refine::apply_replacements(&result.text, &settings.replacements);
+    // Style only formats, so it applies whether or not cleanup ran. It runs
+    // before replacements so a replacement's spelling is kept exactly.
+    let styled =
+        crate::modes::apply_style(&result.text, context.mode.style, &settings.custom_words);
+    final_text = crate::refine::apply_replacements(&styled, &settings.replacements);
     ProcessedTranscription {
         post_processed_text: (final_text != transcription).then(|| final_text.clone()),
         // Captured context is ephemeral. Never persist the composed prompt.

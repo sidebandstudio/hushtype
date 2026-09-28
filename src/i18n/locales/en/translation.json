@@ -727,10 +727,11 @@
       "api_key": "API key (optional)",
       "timeout": "Timeout (milliseconds)",
       "prompt": "Cleanup prompt",
-      "promptDescription": "Edit the prompt here or in refine.txt in the app data folder. Keep instructions to preserve meaning and return only the text.",
+      "promptDescription": "Edits are saved to refine.txt in the app data folder. Delete that file to go back to the built-in prompt, which improves with updates. Keep instructions to preserve meaning and return only the text.",
       "openFolder": "Open app data folder",
       "maxInputChars": "Maximum characters per request",
-      "chunkDescription": "Longer dictations are split at sentence or word boundaries. Reduce this for endpoints with a small context window. All chunks share the timeout."
+      "chunkDescription": "Longer dictations are split at sentence or word boundaries. Reduce this for endpoints with a small context window. All chunks share the timeout.",
+      "timeoutDescription": "Covers a short dictation. Longer dictations get proportionally more time, up to four times this value."
     },
     "dictionary": {
       "title": "Dictionary",
@@ -765,6 +766,25 @@
       "down": "Move down",
       "bundle_ids": "Bundle IDs",
       "url_globs": "URL globs",
+      "style": "Style",
+      "styleDescription": "How text is formatted in this mode, even when Refine is off. Your words stay the same.",
+      "styles": {
+        "serious": {
+          "label": "Serious",
+          "detail": "Capitals and full punctuation",
+          "example": "Hey, are you free for lunch tomorrow? Let's do 12."
+        },
+        "casual": {
+          "label": "Casual",
+          "detail": "Capitals, no closing period",
+          "example": "Hey, are you free for lunch tomorrow? Let's do 12"
+        },
+        "very_casual": {
+          "label": "Very casual",
+          "detail": "Lowercase, no closing period",
+          "example": "hey, are you free for lunch tomorrow? let's do 12"
+        }
+      },
       "refine": "Refine in this mode",
       "refineDescription": "The global Refine setting must also be on. Code defaults to off.",
       "promptBehavior": "Prompt behavior",
@@ -805,6 +825,7 @@
       "modeOff": "Raw text",
       "modeFallback": "Everywhere else",
       "modeMatchers": "{{count}} app or URL matchers",
+      "modeSummary": "{{matchers}} · {{style}}",
       "noReplacements": "No replacements yet. Add a phrase and the spelling you want to use.",
       "sections": {
         "general": "Set your shortcut, microphone, and recording behavior.",

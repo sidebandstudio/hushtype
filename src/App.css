@@ -399,6 +399,46 @@ details[open] > .disclosure-heading svg:last-child {
   border-top: 1px solid var(--color-border);
   padding-top: 16px;
 }
+.style-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.style-option {
+  position: relative;
+  display: grid;
+  gap: 3px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  cursor: pointer;
+}
+.style-option:has(input:checked) {
+  border-color: var(--color-logo-primary);
+  background: var(--color-well);
+}
+.style-option:has(input:focus-visible) {
+  outline: 2px solid var(--color-logo-primary);
+  outline-offset: 2px;
+}
+.style-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.style-option strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.style-option small {
+  color: var(--color-mid-gray);
+  font-size: 11px;
+}
+.style-example {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
 .app-footer {
   display: flex;
   flex-shrink: 0;

@@ -32,11 +32,11 @@ Configuration takes about five minutes after the initial model downloads and app
 
 3. Open `hushtype.app` and grant Microphone and Accessibility access in System Settings. These grants must be made on the Mac running hushtype. Install the app in its permanent location before granting access. Keep the desktop unlocked for dictation.
 
-4. Open Refine settings. The defaults are base URL `http://localhost:11434/v1`, model `qwen3:8b`, no API key, and a 2500 ms timeout. Save any changes. The editable cleanup prompt is `refine.txt` in the app data folder; the same text is editable in settings.
+4. Open Refine settings. The defaults are base URL `http://localhost:11434/v1`, model `qwen3:8b`, no API key, and a 2500 ms timeout. Save any changes. The cleanup prompt is editable in settings. Edits are saved to `refine.txt` in the app data folder; without that file, hushtype uses its built-in prompt, which improves with app updates.
 
 5. Place the cursor in a text field. Hold the configured shortcut, speak, then release. The default is Option-Space; check General settings for the active binding. A short tap can toggle recording with the default hold-or-toggle behavior. Choose hold-only there if preferred.
 
-A cold LLM can take longer than the timeout to load, so the first dictation may paste raw text. Keep Ollama and the model warm for latency measurements. Endpoint errors, timeouts, and rejected edits fall back to the complete raw transcript without an LLM error dialog. Explicit dictionary replacements still apply.
+The timeout covers a short dictation; longer dictations get proportionally more time, up to four times the setting. A cold LLM can take longer than that to load, so the first dictation may paste raw text. Keep Ollama and the model warm for latency measurements. Endpoint errors, timeouts, and rejected edits fall back to the complete raw transcript without an LLM error dialog. Explicit dictionary replacements still apply.
 
 ## MacBook with a separate local host
 
@@ -82,7 +82,7 @@ In Refine, set the base URL, optional API key, and model name accepted by your s
 
 The client requests nonstreaming chat completions and negotiates unsupported optional parameters from server errors. Redirects and environment proxy discovery are disabled. Keys use the existing local settings store and are omitted from debug formatting. Choose your endpoint with the understanding that it receives the transcript and the context enabled below.
 
-Long dictations split at sentence or word boundaries. Maximum characters per request defaults to 4000; reduce it for a small context window. Explicit context-limit errors trigger smaller chunks. All requests share the same timeout. If the full cleanup cannot finish, the entire raw transcript is kept.
+Long dictations split at sentence or word boundaries. Maximum characters per request defaults to 4000; reduce it for a small context window. Explicit context-limit errors trigger smaller chunks. All requests share one deadline. If the full cleanup cannot finish, the entire raw transcript is kept.
 
 ## Modes and dictionary
 
@@ -93,9 +93,11 @@ Modes match in saved order by bundle ID or URL glob. `*` matches any sequence an
 - Code covers Cursor, VS Code, Xcode, iTerm, Terminal, Warp, and Ghostty. Refinement starts off; its optional prompt preserves literal tokens and identifiers.
 - Default performs standard cleanup. Turning Refine off globally disables it in every mode.
 
+Each mode also has a style. Serious keeps capitals and full punctuation. Casual drops the closing period. Very casual also lowercases sentence starts and "i", but keeps names capitalized. Styles never change words, and they apply even when refinement is off or falls back to raw text. Messaging starts as Casual; the other modes start as Serious.
+
 App identity is captured at recording start. Native Accessibility supplies window titles and browser URLs for Safari, Chrome, Arc, and Brave where exposed. Missing or denied context stays absent. App identity, title, and URL are enabled as context by default. Selected text and clipboard text start off and are read for context only when the matched mode enables them. Context is not written into history or timing logs. History retry uses Default without recapturing the settings window.
 
-Dictionary terms feed supported Whisper prompts, local spelling correction, and refinement. Replacements run afterwards in listed order, matching literal phrases without case sensitivity and respecting word boundaries. For example, `open claw` can become `OpenClaw`.
+Dictionary terms feed supported Whisper prompts, local spelling correction, and refinement. Local correction runs before refinement and also joins split words, so add names that speech recognition mishears, such as `hushtype` or `Wispr Flow`. Replacements run afterwards in listed order, matching literal phrases without case sensitivity and respecting word boundaries. For example, `open claw` can become `OpenClaw`.
 
 On macOS, clipboard paste first checks the focused control’s Accessibility role without reading its text. Known non-text controls keep the transcript on the clipboard and show a Command-V notice. Other controls use the existing native read-receipt mechanism. If no reader responds before its timeout, the transcript stays on the clipboard and the same notice appears. A newer clipboard copy is left untouched. A receipt proves that a consumer read the text; it cannot prove that a particular app inserted it.
 

@@ -1,3 +1,6 @@
+#[allow(dead_code)]
+#[path = "../../src-tauri/src/modes.rs"]
+mod modes;
 #[path = "../../src-tauri/src/refine.rs"]
 mod refine;
 
@@ -8,7 +11,20 @@ use std::{env, fs, path::PathBuf};
 struct Fixture {
     id: String,
     raw: String,
-    expected: String,
+    /// Exact output, ignoring whitespace and apostrophe style.
+    #[serde(default)]
+    expected: Option<String>,
+    /// For long real dictations: phrases that must, or must not, appear.
+    #[serde(default)]
+    contains: Vec<String>,
+    #[serde(default)]
+    absent: Vec<String>,
+    /// A shipped mode whose prompt addendum applies, as in the app.
+    #[serde(default)]
+    mode: Option<String>,
+    /// App context as the app sends it: untrusted data in the final message.
+    #[serde(default)]
+    context: Option<serde_json::Value>,
     #[serde(default)]
     dictionary: Vec<String>,
 }
@@ -16,6 +32,7 @@ struct Fixture {
 #[derive(Serialize)]
 struct ResultRow {
     id: String,
+    suite: String,
     raw: String,
     expected: String,
     actual: String,
@@ -23,6 +40,8 @@ struct ResultRow {
     duration_ms: u64,
     passed: bool,
 }
+
+const SUITES: &[&str] = &["cleanup", "disfluency"];
 
 fn normalize(text: &str) -> String {
     text.replace('’', "'")
@@ -61,35 +80,79 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         settings.timeout_ms = value.parse()?;
     }
     settings.validate()?;
-    let prompt_path = env::var_os("HUSHTYPE_REFINE_PROMPT")
-        .map(PathBuf::from)
-        .unwrap_or_else(|| {
-            let path = app_data.join("refine.txt");
-            if path.exists() {
-                path
-            } else {
-                dir.join("../src-tauri/resources/refine.txt")
-            }
-        });
-    let prompt = fs::read_to_string(prompt_path)?;
-    let fixtures: Vec<Fixture> =
-        serde_json::from_slice(&fs::read(dir.join("fixtures/cleanup.json"))?)?;
+    // Same choice as the app: an edited app-data prompt, else the bundled one.
+    let prompt = match env::var_os("HUSHTYPE_REFINE_PROMPT") {
+        Some(path) => fs::read_to_string(path)?,
+        None => fs::read_to_string(app_data.join("refine.txt"))
+            .ok()
+            .filter(|p| !refine::is_retired_default_prompt(p))
+            .map_or_else(
+                || fs::read_to_string(dir.join("../src-tauri/resources/refine.txt")),
+                Ok,
+            )?,
+    };
+    // `--suite NAME` runs one suite, for quick prompt iteration.
+    let only = env::args().skip_while(|a| a != "--suite").nth(1);
+    let suites: Vec<&str> = SUITES
+        .iter()
+        .copied()
+        .filter(|s| only.as_deref().is_none_or(|o| o == *s))
+        .collect();
+    let mut fixtures = Vec::new();
+    for suite in &suites {
+        let path = dir.join(format!("fixtures/{suite}.json"));
+        for fixture in serde_json::from_slice::<Vec<Fixture>>(&fs::read(path)?)? {
+            fixtures.push((*suite, fixture));
+        }
+    }
+    let modes = modes::default_modes();
     // Loading a local model is not a warm inference measurement. The actual
     // fixtures below still use the configured whole-stage timeout.
     if !env::args().any(|a| a == "--no-warmup") {
         let mut warm = settings.clone();
         warm.timeout_ms = 120_000;
-        let result = refine::run(&warm, "the release is ready", &prompt, &[]).await;
+        let result = refine::run(&warm, "the release is ready", &prompt, &[], None).await;
         println!(
             "Warmup: {} ({} ms, excluded from score/timings)",
             result.outcome, result.duration_ms
         );
     }
     let mut results = Vec::new();
-    for fixture in fixtures {
-        let result = refine::run(&settings, &fixture.raw, &prompt, &fixture.dictionary).await;
-        let passed =
-            result.outcome == "cleaned" && normalize(&result.text) == normalize(&fixture.expected);
+    for (suite, fixture) in fixtures {
+        let prompt = match &fixture.mode {
+            Some(id) => modes::ResolvedContext {
+                mode: modes
+                    .iter()
+                    .find(|m| &m.id == id)
+                    .ok_or("unknown mode")?
+                    .clone(),
+                context: Default::default(),
+            }
+            .prompt(&prompt),
+            None => prompt.clone(),
+        };
+        let result = refine::run(
+            &settings,
+            &fixture.raw,
+            &prompt,
+            &fixture.dictionary,
+            fixture.context.as_ref(),
+        )
+        .await;
+        let actual = normalize(&result.text);
+        let passed = result.outcome == "cleaned"
+            && fixture
+                .expected
+                .as_ref()
+                .is_none_or(|e| normalize(e) == actual)
+            && fixture
+                .contains
+                .iter()
+                .all(|c| actual.contains(&normalize(c)))
+            && !fixture
+                .absent
+                .iter()
+                .any(|a| actual.contains(&normalize(a)));
         println!(
             "{} {} ({} ms, {})",
             if passed { "PASS" } else { "FAIL" },
@@ -97,13 +160,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             result.duration_ms,
             result.outcome
         );
+        let expected = fixture.expected.unwrap_or_else(|| {
+            format!(
+                "contains {:?}, absent {:?}",
+                fixture.contains, fixture.absent
+            )
+        });
         if !passed {
-            println!("- {}\n+ {}", fixture.expected, result.text);
+            println!("- {}\n+ {}", expected, result.text);
         }
         results.push(ResultRow {
             id: fixture.id,
+            suite: suite.into(),
             raw: fixture.raw,
-            expected: fixture.expected,
+            expected,
             actual: result.text,
             outcome: result.outcome,
             duration_ms: result.duration_ms,
@@ -111,11 +181,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         });
     }
     let passed = results.iter().filter(|r| r.passed).count();
+    let mut failing_suite = false;
+    let mut summary = serde_json::Map::new();
+    for suite in &suites {
+        let rows: Vec<_> = results.iter().filter(|r| r.suite == *suite).collect();
+        let suite_passed = rows.iter().filter(|r| r.passed).count();
+        println!("{suite}: {suite_passed}/{}", rows.len());
+        // 27 of 30 was the original bar; every suite keeps the same 90%.
+        failing_suite |= suite_passed * 10 < rows.len() * 9;
+        summary.insert(
+            suite.to_string(),
+            serde_json::json!({"passed": suite_passed, "total": rows.len()}),
+        );
+    }
     let mut times: Vec<_> = results.iter().map(|r| r.duration_ms).collect();
     times.sort_unstable();
     let report = serde_json::json!({
         "model": settings.model, "timeout_ms": settings.timeout_ms,
-        "passed": passed, "total": results.len(),
+        "passed": passed, "total": results.len(), "suites": summary,
         "p50_ms": times[(times.len()-1)/2], "p95_ms": times[(times.len()*95).div_ceil(100)-1],
         "results": results,
     });
@@ -124,7 +207,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         serde_json::to_string_pretty(&report)?,
     )?;
     println!("{passed}/{} passed. Results: eval/latest.json", times.len());
-    if passed < 27 {
+    if failing_suite {
         std::process::exit(1);
     }
     Ok(())
