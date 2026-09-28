@@ -1,6 +1,6 @@
 [package]
 name = "hushtype"
-version = "0.2.1"
+version = "0.3.0"
 description = "hushtype voice dictation"
 authors = ["Ali Younes"]
 edition = "2021"
@@ -98,8 +98,8 @@ signal-hook = "0.3"
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-autostart = "2.5.1"
 tauri-plugin-global-shortcut = "2.3.1"
+tauri-plugin-notification = "2"
 tauri-plugin-single-instance = "2.3.2"
-tauri-plugin-updater = "2.10.1"
 
 [target.'cfg(windows)'.dependencies]
 # Used to reach ICoreWebView2Settings3 through the webview's controller

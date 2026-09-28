@@ -66,7 +66,7 @@ The existing `post_process_transcription` talks through `llm_client.rs` and has 
 
 ## Network and verification baseline
 
-Update checks are disabled and the app contains no model downloader, so the only runtime network request is the refine endpoint the user configures. There is no analytics. The headless `--transcribe-file`, `--list-models`, and `--list-devices` paths allow real engine tests without pretending that file input is a live microphone session. Build and runtime evidence belongs in `PROGRESS.md`.
+The app contains no model downloader and no analytics. Its runtime network requests are the refine endpoint the user configures and, while update checks are on, a GET of `https://hushtype.vercel.app/latest.json` by `update_check.rs` 30 seconds after launch and every six hours. That request has no query string or identifier; the response names the version the installer serves. A newer version is announced once per run by a notification, a tray item, and the About settings, and installing runs the published installer in Terminal. `HUSHTYPE_DISABLE_UPDATER` forces checks off. The headless `--transcribe-file`, `--list-models`, and `--list-devices` paths allow real engine tests without pretending that file input is a live microphone session. Build and runtime evidence belongs in `PROGRESS.md`.
 
 ## hushtype refine extension, Phase 1
 

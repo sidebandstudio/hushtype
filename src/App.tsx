@@ -27,6 +27,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
+import { useUpdateStore } from "./stores/updateStore";
 import { commands } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 
@@ -137,6 +138,11 @@ function App() {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [settings?.debug_mode, updateSetting]);
+
+  // Learn about newer published versions; the backend runs the checks
+  useEffect(() => {
+    void useUpdateStore.getState().initialize();
+  }, []);
 
   // Listen for recording errors from the backend and show a toast
   useEffect(() => {
@@ -386,7 +392,7 @@ function App() {
           </main>
         </div>
         {/* Fixed footer at bottom */}
-        <Footer />
+        <Footer onUpdateClick={() => setCurrentSection("about")} />
       </div>
     );
   }

@@ -4,7 +4,7 @@ Hold a shortcut, speak, and release to paste cleaned text at the cursor. hushtyp
 
 hushtype is proprietary software by Sideband Studio; see [LICENSE](LICENSE). Third-party components and the notices their licenses require are listed in [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES).
 
-The app has no accounts, sync, telemetry, or update checks. Its runtime network requests go only to the LLM endpoint you configure. Model installation happens separately through the setup commands below. Transcription history stays on this Mac; its retention controls are in Advanced settings.
+The app has no accounts, sync, or telemetry. Its runtime network requests go to the LLM endpoint you configure and, unless you turn update checks off in About, to hushtype.vercel.app for a small file naming the current version. Model installation happens separately through the setup commands below. Transcription history stays on this Mac; its retention controls are in Advanced settings.
 
 ## Setup with Ollama
 

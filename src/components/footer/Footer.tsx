@@ -2,12 +2,19 @@ import React, { useState, useEffect } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "@/hooks/useSettings";
+import { useUpdateStore } from "@/stores/updateStore";
 
 import ModelSelector from "../model-selector";
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  /** Called when the "Update available" pill is clicked. */
+  onUpdateClick?: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onUpdateClick }) => {
   const { t } = useTranslation();
   const { settings } = useSettings();
+  const availableVersion = useUpdateStore((state) => state.availableVersion);
   const [version, setVersion] = useState("");
 
   useEffect(() => {
@@ -35,6 +42,15 @@ const Footer: React.FC = () => {
                 : "hushtype.ui.refineOff",
             )}
           </span>
+        )}
+        {availableVersion && (
+          <button
+            type="button"
+            className="footer-update"
+            onClick={onUpdateClick}
+          >
+            {t("footer.updateAvailableShort")}
+          </button>
         )}
         {version && <span>{t("hushtype.ui.version", { version })}</span>}
       </div>

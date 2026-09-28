@@ -612,7 +612,7 @@ export const useSettingsStore = create<SettingsStore>()(
       }
     },
 
-    // Check whether update checks are locked (hushtype always disables them)
+    // Check whether update checks are locked by HUSHTYPE_DISABLE_UPDATER
     loadUpdateChecksLocked: async () => {
       try {
         const locked = await commands.isUpdateChecksLocked();

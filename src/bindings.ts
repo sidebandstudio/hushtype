@@ -558,9 +558,24 @@ async runKeyboardDiagnostic(durationSecs: number | null) : Promise<Result<Keyboa
     else return { status: "error", error: e  as any };
 }
 },
-async triggerUpdateCheck() : Promise<Result<null, string>> {
+/**
+ * Manual check from the About settings. Allowed while automatic checks are
+ * off; only the environment lock blocks it.
+ */
+async checkForUpdate() : Promise<Result<string | null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("trigger_update_check") };
+    return { status: "ok", data: await TAURI_INVOKE("check_for_update") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async getAvailableUpdate() : Promise<string | null> {
+    return await TAURI_INVOKE("get_available_update");
+},
+async runUpdateInstaller() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("run_update_installer") };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -984,11 +999,13 @@ async isLaptop() : Promise<Result<boolean, string>> {
 export const events = __makeEvents__<{
 historyUpdatePayload: HistoryUpdatePayload,
 streamPhaseEvent: StreamPhaseEvent,
-streamTextEvent: StreamTextEvent
+streamTextEvent: StreamTextEvent,
+updateAvailable: UpdateAvailable
 }>({
 historyUpdatePayload: "history-update-payload",
 streamPhaseEvent: "stream-phase-event",
-streamTextEvent: "stream-text-event"
+streamTextEvent: "stream-text-event",
+updateAvailable: "update-available"
 })
 
 /** user-defined constants **/
@@ -1238,6 +1255,10 @@ export type Theme = "system" | "light" | "dark"
 export type TimingRecord = { timestamp: string; mode: string; audio_ms: number; capture_stop_ms: number; stt_ms: number; stt_done_ms: number; refine_ms: number; refine_done_ms: number; paste_ms: number; paste_done_ms: number; total_ms: number; outcome: string; paste_outcome: string }
 export type TranscribeAcceleratorSetting = "auto" | "cpu" | "gpu"
 export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "xdotool"
+/**
+ * Sent to the settings window when a check finds a newer version.
+ */
+export type UpdateAvailable = { version: string }
 export type VadBackend = "silero" | "earshot"
 export type WindowsMicrophonePermissionStatus = { supported: boolean; overall_access: PermissionAccess; device_access: PermissionAccess; app_access: PermissionAccess; desktop_app_access: PermissionAccess }
 

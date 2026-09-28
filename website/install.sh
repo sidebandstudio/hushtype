@@ -11,9 +11,9 @@
 
 set -euo pipefail
 
-VERSION="0.2.1"
-APP_URL="https://hushtype.vercel.app/download/hushtype-0.2.1-mac.zip"
-APP_SHA256="2e78a56df62c40e76a35510d4322aaa53620d5abfdd68911cd8062c0cda0b2b6"
+VERSION="0.3.0"
+APP_URL="https://hushtype.vercel.app/download/hushtype-0.3.0-mac.zip"
+APP_SHA256="b4f0b93bd3dd6979f138142e626f3dc9037fdba91c70947bb9e4f49f6e71fe03"
 APP_SIZE="18 MB"
 
 # NVIDIA Parakeet TDT 0.6B v3 (CC BY 4.0), int8 ONNX conversion on Hugging Face,

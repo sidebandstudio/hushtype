@@ -26,6 +26,7 @@ mod signal_handle;
 mod transcription_coordinator;
 mod tray;
 mod tray_i18n;
+mod update_check;
 mod utils;
 
 pub use cli::CliArgs;
@@ -45,7 +46,7 @@ use tauri::image::Image;
 pub use transcription_coordinator::TranscriptionCoordinator;
 
 use tauri::tray::TrayIconBuilder;
-use tauri::{AppHandle, Emitter, Listener, Manager};
+use tauri::{AppHandle, Listener, Manager};
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_log::{Builder as LogBuilder, RotationStrategy, Target, TargetKind};
 
@@ -296,10 +297,11 @@ fn initialize_core_logic(app_handle: &AppHandle) {
                 show_main_window(app);
             }
             "check_updates" => {
-                let settings = settings::get_settings(app);
-                if settings::update_checks_effectively_enabled(&settings) {
-                    show_main_window(app);
-                    let _ = app.emit("check-for-updates", ());
+                update_check::check_from_tray(app);
+            }
+            "update_available" => {
+                if let Err(e) = update_check::run_installer(app) {
+                    log::error!("Failed to start the updater from the tray: {e}");
                 }
             }
             "copy_last_transcript" => {
@@ -371,18 +373,9 @@ fn initialize_core_logic(app_handle: &AppHandle) {
 
     // Create the recording overlay window (hidden by default)
     utils::create_recording_overlay(app_handle);
-}
 
-#[tauri::command]
-#[specta::specta]
-fn trigger_update_check(app: AppHandle) -> Result<(), String> {
-    let settings = settings::get_settings(&app);
-    if !settings::update_checks_effectively_enabled(&settings) {
-        return Ok(());
-    }
-    app.emit("check-for-updates", ())
-        .map_err(|e| e.to_string())?;
-    Ok(())
+    // Announce newer published versions (see update_check.rs)
+    update_check::start(app_handle);
 }
 
 #[tauri::command]
@@ -719,7 +712,9 @@ pub fn run(cli_args: CliArgs) {
             shortcut::native_keys::stop_native_keys_recording,
             secure_input::get_secure_input_status,
             secure_input::run_keyboard_diagnostic,
-            trigger_update_check,
+            update_check::check_for_update,
+            update_check::get_available_update,
+            update_check::run_update_installer,
             show_main_window_command,
             commands::cancel_operation,
             commands::is_portable,
@@ -779,6 +774,7 @@ pub fn run(cli_args: CliArgs) {
             managers::history::HistoryUpdatePayload,
             managers::transcription::StreamTextEvent,
             managers::transcription::StreamPhaseEvent,
+            update_check::UpdateAvailable,
         ]);
 
     #[cfg(debug_assertions)] // <- Only export on non-release builds
@@ -800,6 +796,7 @@ pub fn run(cli_args: CliArgs) {
     let mut builder = tauri::Builder::default()
         .device_event_filter(tauri::DeviceEventFilter::Always)
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(
             LogBuilder::new()
                 .level(log::LevelFilter::Trace) // Set to most verbose level globally
